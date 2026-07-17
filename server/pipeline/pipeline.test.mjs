@@ -9,6 +9,7 @@ import { extractClaims, extractClaimsLocally, MAX_TRANSCRIPT_CHARS, validateTran
 import { rerunCommand, evaluateCommandClaim } from './runner.mjs';
 import { gitDiff, detectWeakenedTests, classifyBlastRadius } from './diff.mjs';
 import { makeVerdict } from './verdict.mjs';
+import { receiptMarkdown } from '../receipt-export.mjs';
 import { CodexProvider, parseCodexClaims } from './codex.mjs';
 import { createClaimExtractor, DEFAULT_PROVIDER } from './providers/index.mjs';
 import { verifyFixture } from './fixture.mjs';
@@ -139,4 +140,10 @@ test('documents conservative verdict priority for missing and conflicting eviden
   assert.equal(makeVerdict({ claimEvidence: [{ status: 'inconclusive' }], weakenedTests: [], blastRadius: { status: 'expected' } }).verdict, 'RE-RUN');
   assert.equal(makeVerdict({ claimEvidence: [{ status: 'supported' }], weakenedTests: [], blastRadius: { status: 'surprise', sensitivePaths: [{ path: 'auth/session.mjs' }] } }).verdict, 'ESCALATE');
   assert.equal(makeVerdict({ claimEvidence: [{ status: 'contradicted', claim: 'Tests pass' }], weakenedTests: [], blastRadius: { status: 'surprise', sensitivePaths: [{ path: 'auth/session.mjs' }] } }).verdict, 'FIX');
+});
+
+test('exports a readable receipt without changing evidence', () => {
+  const report = { parsed: { claims: [{ text: 'Tests passed', command: 'npm test' }] }, claimEvidence: [], weakenedTests: [{ type: 'skipped_test', file: 'checkout.test.mjs', line: "+test.skip('adds tax')" }], blastRadius: { sensitivePaths: [] }, verdict: { verdict: 'FIX', reason: 'skipped_test' } };
+  assert.match(receiptMarkdown(report), /Recommendation:\*\* FIX/);
+  assert.match(receiptMarkdown(report), /checkout\.test\.mjs/);
 });

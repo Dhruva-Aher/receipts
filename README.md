@@ -112,6 +112,16 @@ npm run build
 
 `npm run verify` combines those checks with all three frozen fixture replays. The repository’s [GitHub Actions workflow](.github/workflows/verify.yml) runs that same command on every push and pull request.
 
+### Export a receipt
+
+```bash
+# Evidence-backed Markdown for a PR description or review comment
+npm run evidence -- --fixture=lied-test-run --output=receipt.md
+
+# Machine-readable report
+npm run evidence -- --fixture=lied-test-run --output=receipt.json
+```
+
 The fixture test replays all three reports twice and asserts byte-stable evidence output, so demo behavior does not depend on the repository’s current `HEAD` or working tree.
 
 ## Claim-extraction providers
