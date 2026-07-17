@@ -1,6 +1,6 @@
 # Receipts
 
-**AI trust infrastructure for software agents.** Every AI-generated claim deserves an independently verified receipt before a human merges.
+**An independent verification layer for coding agents.** Receipts turns a subset of agent completion claims into executable evidence before a human merges.
 
 > **Don’t trust the summary. Trust the receipt.**
 
@@ -36,7 +36,7 @@ CI tells you whether tests passed. **Receipts tells you whether the AI truthfull
 
 ## The product insight
 
-AI is used precisely where deterministic software cannot help: translating free-form agent narration into discrete claims such as “checkout tests pass” and its referenced command. From that **trust boundary** onward, the verifier is deterministic: command outputs, changed test assertions, and sensitive paths either support the claim or provide a receipt against it.
+Codex translates free-form narration into checkable command claims. Receipts then re-runs supported commands and inspects the Git diff for skipped tests, removed assertions, masked failures, sensitive paths, and disproportionate scope. This is a merge-verification tool—not a general-purpose AI truth system or a CI merge gate.
 
 ## Architecture
 
@@ -118,63 +118,10 @@ The fixture test replays all three reports twice and asserts byte-stable evidenc
 
 For the narrated three-minute submission walkthrough, use [docs/demo-script.md](docs/demo-script.md). For the pre-submission gate, including the required `/feedback` session ID, use [docs/submission-checklist.md](docs/submission-checklist.md).
 
-## Claim-extraction providers
-
-Claim extraction is a pluggable boundary. Everything after it—the command runner, test-weakeness detector, blast-radius classifier, and verdict engine—is provider-independent.
-
-- **`CodexProvider` (default):** runs `codex exec` using **`gpt-5.6-terra via authenticated Codex CLI`**. This identifier was observed in the local Codex rollout session at `~/.codex/sessions/2026/07/17/rollout-2026-07-17T18-25-07-019f7025-1876-7bd1-a6e7-dae015c1333d.jsonl` as `"model":"gpt-5.6-terra"`.
-- **`LocalProvider`:** deterministic transcript parsing for fast offline development and automated tests. It is opt-in, never the default.
-- **`OpenAIProvider`:** documented extension point for a future direct API integration. It deliberately has no API client or runtime dependency today.
-
-```bash
-# Default: authenticated Codex CLI
-npm run evidence -- proofs/current-codex-run.txt "$PWD" "Implement an evidence pipeline"
-
-# Explicit local deterministic provider
-npm run evidence -- proofs/current-codex-run.txt "$PWD" "Implement an evidence pipeline" --provider=local
-```
-
-`RECEIPTS_CLAIM_PROVIDER=local` is the equivalent server-side override.
-
 ## How Codex accelerated this project
 
-This was iterative development, not one-shot generation.
-
-1. **Planning:** Codex helped reduce the problem to one user decision—merge, fix, re-run, or escalate—and separated model interpretation from deterministic evidence.
-2. **Implementation:** the initial transcript parser, command re-runner, test-diff detector, blast-radius classifier, and verdict engine were built as independently testable layers.
-3. **Debugging:** Codex exposed real edge cases: an empty Git history, test-like strings inside fixture-generator source, and the need to safely isolate the claim-extraction subprocess from repository data.
-4. **Testing:** Codex generated and exercised actual isolated Git repositories, real `codex exec` transcripts, and frozen reports for `MERGE`, `FIX`, and `ESCALATE`. The fixture system became the regression guard for the demo.
-5. **Refactoring:** Codex helped move claim extraction behind `ClaimExtractor`, preserving `CodexProvider` as the live default while making `LocalProvider` explicit and leaving `OpenAIProvider` as a safe future extension point.
-6. **Documentation:** Codex captured the real `FIX` reveal, recorded the observed provider model identifier, and turned the architecture and reproducible fixtures into this handoff.
-
-## Repository map
-
-```text
-src/                         React/Tailwind/Framer Motion verdict UI
-server/pipeline/             deterministic evidence pipeline and providers
-fixtures/                    frozen transcript, diff, evidence, and verdict demos
-assets/                      captured fixture-driven MERGE, FIX, and ESCALATE examples
-```
-
-## Limitations and next step
-
-Receipts currently verifies commands that it can safely allow-list and reports deterministic evidence from the repository snapshot it was given. It does not claim to replace human code review: its job is to make an agent’s completion summary auditable before that review starts.
-
-The next product validation step is a pilot with developers who review AI-authored pull requests, measuring whether the receipt changes their merge decision or removes a manual verification step. No pilot or productivity percentage is claimed in this repository today.
+Codex accelerated planning, implementation, debugging, fixture capture, provider refactoring, and documentation. At runtime, `CodexProvider` uses `gpt-5.6-terra via authenticated Codex CLI` to extract claims; command replay, diff inspection, and verdicting stay local and reproducible.
 
 ## Future work
 
-After submission, validate agent-agnostic transcript capture with additional installed agent CLIs and test a native pull-request handoff. These are deliberately not part of this submission; see the [feature freeze](docs/feature-freeze.md).
-
-## Failure behavior and verdict priority
-
-Receipts fails specifically rather than silently: empty or oversized transcripts are rejected before a provider is called; an unavailable, unauthenticated, timed-out, or malformed Codex extraction reports the exact extraction failure; a non-Git path or invalid Git base reports a Git-specific error; and an unrunnable referenced command becomes inconclusive evidence rather than a process crash or unsupported accusation.
-
-Verdict priority is deterministic and intentionally conservative:
-
-1. `FIX` when a command claim is contradicted or weakened tests are found.
-2. `ESCALATE` when claims are otherwise supported but the diff has a sensitive-path or scope surprise.
-3. `RE-RUN` when no executable claims are available, or a referenced command could not start or timed out.
-4. `MERGE` only when executable claims are supported and no other evidence flags the run.
-
-This means a true test command plus an auth-path surprise is still an `ESCALATE`; a deleted assertion outranks that surprise as a `FIX`; and an unavailable environment becomes `RE-RUN` rather than an unsupported accusation.
+After submission: GitHub Checks that attach receipts to PRs, CI runner support, policy rules, an evidence archive, and validated transcript capture for additional coding agents. These are deliberately not part of this submission; see the [feature freeze](docs/feature-freeze.md).
