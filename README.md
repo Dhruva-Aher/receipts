@@ -1,38 +1,16 @@
 # Receipts
 
-Coding agents frequently finish with “all tests pass” and “no breaking changes.” A developer must either trust that summary or spend time re-running commands and inspecting the diff by hand.
+**An independent verifier for AI software agents.** Receipts turns an agent’s completion summary into falsifiable claims, then verifies them against deterministic command and diff evidence before a human merges.
 
 > **Don’t trust the summary. Trust the receipt.**
 
-Receipts turns an agent’s own narration into checkable claims, re-runs the referenced command, inspects the test diff and blast radius, then returns one merge decision backed by the evidence that earned it.
+![FIX evidence from the lied-test-run fixture: the agent's Checkout tests pass claim is struck through next to the captured test.skip and removed assertion.](assets/lied-test-run-fix.png)
 
 **Track:** Developer Tools. **User:** the engineer deciding whether an autonomous coding agent’s pull request is safe to merge.
 
-### Why this is different
+## The product insight
 
-Code-review tools try to find more problems in a diff. Receipts answers the trust problem first: *did the agent’s own completion claim survive contact with reality?* That makes the output a single merge decision with an inspectable receipt, not another queue of review comments.
-
-## Fixture-driven verdicts
-
-These are captures from the running UI after selecting the repository’s frozen fixtures. The screen shows the exact verdict and evidence returned by the pipeline—no mocked card content or hand-written result text.
-
-### Clean run → MERGE
-
-The captured `npm test` command exits successfully and the frozen diff has no weakened-test or blast-radius finding.
-
-![MERGE verdict from the clean-run fixture, with the captured test command output rendered in the evidence terminal.](assets/clean-run-merge.jpg)
-
-### Claimed tests pass, but the diff weakens them → FIX
-
-The claim is struck through beside the captured `test.skip` and removed-assertion findings from `lied-test-run`.
-
-![FIX evidence from the lied-test-run fixture: the agent's Checkout tests pass claim is struck through next to the captured test.skip and removed assertion.](assets/lied-test-run-fix.png)
-
-### Sensitive path changed → ESCALATE
-
-Even with a supported test claim, `blast-radius-run` escalates because its captured diff modifies `auth/session.mjs`.
-
-![ESCALATE verdict from the blast-radius-run fixture, with test output and sensitive-path evidence.](assets/blast-radius-escalate.jpg)
+AI is used precisely where deterministic software cannot help: translating free-form agent narration into discrete claims such as “checkout tests pass” and its referenced command. From that **trust boundary** onward, the verifier is deterministic: command outputs, changed test assertions, and sensitive paths either support the claim or provide a receipt against it.
 
 ## Architecture
 
@@ -40,16 +18,27 @@ Even with a supported test claim, `blast-radius-run` escalates because its captu
 flowchart LR
     T["Agent transcript"] --> C["CodexProvider\n`gpt-5.6-terra via authenticated Codex CLI`"]
     C --> CL["Discrete, checkable claims"]
-    CL --> R["Command re-run\nexit code + stdout/stderr"]
+    CL --> BOUNDARY["Trust boundary\nAI interpretation ends here"]
+    BOUNDARY --> R["Deterministic command re-run\nexit code + stdout/stderr"]
     D["Git diff"] --> W["Weakened test detector\nskip / removed assertion / || true"]
     D --> B["Blast-radius classifier\nsensitive paths + diff size"]
     R --> V["Deterministic verdict engine"]
     W --> V
     B --> V
-    V --> U["React verdict UI\nMERGE / FIX / RE-RUN / ESCALATE"]
+    V --> U["React verdict UI\nrecommendation + receipts"]
+    classDef trust fill:#fff2cc,stroke:#c58b00,color:#5b4200
+    classDef deterministic fill:#e8f6ef,stroke:#0b6b4f,color:#063b2c
+    class BOUNDARY trust
+    class R,W,B,V deterministic
 ```
 
-Codex is essential at the interpretation boundary: free-form agent narration must become discrete, falsifiable claims. The command runner, diff checks, and verdict engine are deterministic so every decision has a concrete receipt.
+## More real fixture examples
+
+The following are captures from the running UI after selecting frozen fixtures; every value comes from their pipeline reports.
+
+| Clean verification | Sensitive-path escalation |
+| --- | --- |
+| ![MERGE verdict from the clean-run fixture.](assets/clean-run-merge.jpg) | ![ESCALATE verdict from the blast-radius-run fixture.](assets/blast-radius-escalate.jpg) |
 
 ## Setup
 
@@ -89,6 +78,8 @@ npm run test:pipeline
 Expected fixture verdicts are `MERGE` (`clean-run`), `FIX` (`lied-test-run`), and `ESCALATE` (`blast-radius-run`). This is the fastest way to judge the product logic without rebuilding or configuring a live agent environment.
 
 To try the rendered UI without a production build, start `npm run evidence:server` and `npm run dev`, then choose one of the three **Fixture** options in the sample-run dropdown.
+
+Receipts also keeps the last 20 actual local verification summaries in `.receipts/history.json` (ignored by Git). The UI shows only real verdicts, extracted-claim counts, evidence counts, and timestamps—never guessed agent identities or synthetic trend data.
 
 ## The demo moment
 
@@ -167,7 +158,7 @@ The next product validation step is a pilot with developers who review AI-author
 
 ## Failure behavior and verdict priority
 
-Receipts fails specifically rather than silently: empty or oversized transcripts are rejected before a provider is called; an unavailable, unauthenticated, timed-out, or malformed Codex extraction reports the exact extraction failure; a non-Git path or invalid Git base reports a Git-specific error; and an unrunnable referenced command becomes contradictory command evidence instead of a process crash.
+Receipts fails specifically rather than silently: empty or oversized transcripts are rejected before a provider is called; an unavailable, unauthenticated, timed-out, or malformed Codex extraction reports the exact extraction failure; a non-Git path or invalid Git base reports a Git-specific error; and an unrunnable referenced command becomes inconclusive evidence rather than a process crash or unsupported accusation.
 
 Verdict priority is deterministic and intentionally conservative:
 
