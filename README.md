@@ -114,6 +114,8 @@ npm run build
 
 ### Export a receipt
 
+The verdict screen can download the exact report as a Markdown receipt. The CLI offers the same export for automation:
+
 ```bash
 # Evidence-backed Markdown for a PR description or review comment
 npm run evidence -- --fixture=lied-test-run --output=receipt.md

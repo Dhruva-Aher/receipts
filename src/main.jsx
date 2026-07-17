@@ -34,6 +34,17 @@ function receiptFacts(report) {
   for (const path of report.blastRadius?.sensitivePaths || []) facts.push({ tone: 'failed', text: `sensitive path changed · ${path.path}` });
   return facts;
 }
+function downloadReceipt(report) {
+  const lines = ['# Receipts verification receipt', '', `**Recommendation:** ${report.verdict.verdict}`, `**Reason:** ${report.verdict.reason}`, '', '## Agent claims', ...report.parsed.claims.map((claim) => `- ${claim.text}`), '', '## Evidence'];
+  for (const item of report.claimEvidence || []) lines.push(`- **${item.status}** — ${item.claim}`);
+  for (const finding of report.weakenedTests || []) lines.push(`- **${finding.type.replaceAll('_', ' ')}** — \`${finding.file}\`: \`${finding.line}\``);
+  for (const path of report.blastRadius?.sensitivePaths || []) lines.push(`- **sensitive path changed** — \`${path.path}\``);
+  const blob = new Blob([`${lines.join('\n')}\n`], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url; link.download = `receipts-${report.verdict.verdict.toLowerCase()}.md`; link.click();
+  URL.revokeObjectURL(url);
+}
 const cardMotion = (index) => ({ initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.48 + index * 0.09, duration: 0.25, ease: 'easeOut' } });
 function readableError(error) {
   const message = error?.message || 'Verification could not complete.';
@@ -119,7 +130,7 @@ function App() {
       <AnimatePresence mode="wait">{state === 'verdict' && report && <motion.section key={report.verdict.verdict} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="w-full max-w-3xl">
         <motion.div initial={{ opacity: 0, scale: 0.78, backgroundColor: '#fafaf9' }} animate={{ opacity: 1, scale: 1, backgroundColor: verdictMotionColor[report.verdict.verdict] || '#f5f5f4' }} transition={{ scale: { type: 'spring', stiffness: 420, damping: 17, mass: 0.8 }, opacity: { duration: 0.18 }, backgroundColor: { duration: 0.34 } }} className={`receipt-card p-7 sm:p-11 ${verdictColor[report.verdict.verdict] || 'text-stone-950'}`}><div className="receipt-top"><p className="evidence-label">Receipts · independent verification</p><span className="receipt-id">{report.verdict.verdict}</span></div><div className="receipt-rule" /><p className="receipt-section">Agent said</p><p className="receipt-claim">{report.parsed?.claims?.[0]?.text || 'No executable claim was extracted.'}</p><p className="receipt-section mt-7">Reality</p><ul className="receipt-facts">{receiptFacts(report).map((fact, index) => <li key={`${fact.text}-${index}`} className={fact.tone}> {fact.text}</li>)}</ul><div className="receipt-rule mt-8" /><h1 className="verdict-word mt-6 font-serif font-semibold">{verdictPresentation(report).signal}</h1><p className="verdict-action mt-7">{verdictPresentation(report).action}</p><p className="verdict-summary mt-3">{verdictPresentation(report).detail}</p></motion.div>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45, duration: 0.18 }} className="mt-16 space-y-4"><p className="evidence-label">Evidence</p>{report.claimEvidence?.map((item, index) => <EvidenceCard key={item.claimId} item={item} index={index} />)}{report.weakenedTests?.map((finding, index) => <PipelineFinding key={`${finding.file}-${index}`} finding={finding} index={(report.claimEvidence?.length || 0) + index} claim={report.parsed?.claims?.find((item) => item.type === 'tests_pass')} />)}<BlastRadius blastRadius={report.blastRadius} index={(report.claimEvidence?.length || 0) + (report.weakenedTests?.length || 0)} />{!report.claimEvidence?.length && !report.weakenedTests?.length && !report.blastRadius?.oversized && !report.blastRadius?.sensitivePaths?.length && <p className="text-sm text-stone-600">No evidence was returned.</p>}</motion.div>
-        <button onClick={startOver} className="mt-10 border border-stone-300 bg-white px-4 py-2 text-sm font-medium">Check another run</button>
+        <div className="mt-10 flex flex-wrap gap-3"><button onClick={() => downloadReceipt(report)} className="bg-stone-950 px-4 py-2 text-sm font-medium text-white">Download receipt</button><button onClick={startOver} className="border border-stone-300 bg-white px-4 py-2 text-sm font-medium">Check another run</button></div>
       </motion.section>}</AnimatePresence>
     </div>
   </main>;
