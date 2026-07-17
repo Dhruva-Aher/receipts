@@ -1,12 +1,22 @@
 # Receipts
 
-**An independent verifier for AI software agents.** Receipts turns an agent’s completion summary into falsifiable claims, then verifies them against deterministic command and diff evidence before a human merges.
+**AI trust infrastructure for software agents.** Every AI-generated claim deserves an independently verified receipt before a human merges.
 
 > **Don’t trust the summary. Trust the receipt.**
 
-![FIX evidence from the lied-test-run fixture: the agent's Checkout tests pass claim is struck through next to the captured test.skip and removed assertion.](assets/lied-test-run-fix.png)
+![A live frozen-fixture replay: the agent says Checkout tests pass, Receipts finds test.skip and a removed assertion, then recommends FIX BEFORE MERGE.](assets/lie-caught-flow.svg)
 
 **Track:** Developer Tools. **User:** the engineer deciding whether an autonomous coding agent’s pull request is safe to merge.
+
+## The problem
+
+CI tells you whether tests passed. **Receipts tells you whether the AI truthfully described what it actually did.**
+
+| | AI agent | Receipts |
+| --- | --- | --- |
+| Writes code | ✓ | ✗ |
+| Summarizes work | ✓ | ✗ |
+| Independently verifies claims | ✗ | ✓ |
 
 ## The product insight
 
@@ -14,23 +24,9 @@ AI is used precisely where deterministic software cannot help: translating free-
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    T["Agent transcript"] --> C["CodexProvider\n`gpt-5.6-terra via authenticated Codex CLI`"]
-    C --> CL["Discrete, checkable claims"]
-    CL --> BOUNDARY["Trust boundary\nAI interpretation ends here"]
-    BOUNDARY --> R["Deterministic command re-run\nexit code + stdout/stderr"]
-    D["Git diff"] --> W["Weakened test detector\nskip / removed assertion / || true"]
-    D --> B["Blast-radius classifier\nsensitive paths + diff size"]
-    R --> V["Deterministic verdict engine"]
-    W --> V
-    B --> V
-    V --> U["React verdict UI\nrecommendation + receipts"]
-    classDef trust fill:#fff2cc,stroke:#c58b00,color:#5b4200
-    classDef deterministic fill:#e8f6ef,stroke:#0b6b4f,color:#063b2c
-    class BOUNDARY trust
-    class R,W,B,V deterministic
-```
+![The trust boundary: Codex interprets the transcript; everything afterward runs locally and produces executable proof.](assets/trust-boundary.svg)
+
+Only the transcript is sent to the authenticated Codex CLI claim extractor in an isolated read-only temporary directory. Source code stays on the machine; referenced commands and Git-diff checks run locally.
 
 ## More real fixture examples
 

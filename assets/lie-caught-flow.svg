@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Receipts catches a weakened test claim</title><desc id="desc">An agent says checkout tests pass. Receipts finds test.skip and a removed assertion, then recommends fixing before merge.</desc>
+  <rect width="1200" height="560" rx="28" fill="#101b19"/>
+  <text x="64" y="76" fill="#95a49f" font-family="ui-monospace, monospace" font-size="18" letter-spacing="3">LIVE FIXTURE REPLAY · LIED-TEST-RUN</text>
+  <rect x="64" y="120" width="1072" height="92" rx="14" fill="#182725" stroke="#35514b" stroke-width="2"/>
+  <text x="96" y="158" fill="#94c4b5" font-family="ui-monospace, monospace" font-size="16" letter-spacing="2">AI AGENT</text><text x="96" y="190" fill="#f5f7f6" font-family="Georgia, serif" font-size="30">✓ “Checkout tests pass: npm test”</text>
+  <path d="M600 232v34" stroke="#d9e4e0" stroke-width="5" stroke-linecap="round"/><path d="m587 255 13 13 13-13" fill="none" stroke="#d9e4e0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="64" y="286" width="1072" height="106" rx="14" fill="#421b1c" stroke="#df665d" stroke-width="2"/>
+  <text x="96" y="326" fill="#ffaaa2" font-family="ui-monospace, monospace" font-size="16" letter-spacing="2">RECEIPTS · INDEPENDENT CHECK</text><text x="96" y="370" fill="#fff2f1" font-family="Georgia, serif" font-size="42" font-weight="700">✕ VERIFICATION FAILED</text>
+  <rect x="64" y="420" width="510" height="84" rx="12" fill="#f8e4e1"/><text x="92" y="454" fill="#8a2824" font-family="ui-monospace, monospace" font-size="17">EVIDENCE  test.skip('adds tax'…)</text><text x="92" y="483" fill="#8a2824" font-family="ui-monospace, monospace" font-size="17">EVIDENCE  assertion removed</text>
+  <rect x="604" y="420" width="532" height="84" rx="12" fill="#f5bf55"/><text x="636" y="456" fill="#4a2800" font-family="ui-monospace, monospace" font-size="16" letter-spacing="2">RECOMMENDED ACTION</text><text x="636" y="488" fill="#4a2800" font-family="Georgia, serif" font-size="29" font-weight="700">FIX BEFORE MERGE</text>
+</svg>

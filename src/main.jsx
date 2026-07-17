@@ -20,7 +20,7 @@ function verdictPresentation(report) {
   const verdict = report.verdict.verdict;
   const contradicted = report.claimEvidence?.some((item) => item.status === 'contradicted');
   if (verdict === 'MERGE') return { signal: 'Claims verified', action: 'Safe to merge', detail: 'Independent checks matched the agent’s completion claim.' };
-  if (verdict === 'FIX') return { signal: contradicted ? 'Claim disproved' : 'Verification failed', action: 'Fix before merge', detail: contradicted ? 'A claimed command did not match the captured result.' : 'The diff weakened the evidence behind the agent’s claim.' };
+  if (verdict === 'FIX') return { signal: contradicted ? 'Claim disproved' : 'Verification failed', action: 'Do not merge — fix required', detail: contradicted ? 'A claimed command did not match the captured result.' : 'The diff weakened the evidence behind the agent’s claim.' };
   if (verdict === 'ESCALATE') return { signal: 'Review required', action: 'Escalate before merge', detail: 'The change crossed a sensitive trust boundary.' };
   return { signal: 'Verification incomplete', action: 'Re-run verification', detail: 'Receipts could not complete an independent check.' };
 }
