@@ -6,6 +6,12 @@ Coding agents frequently finish with “all tests pass” and “no breaking cha
 
 Receipts turns an agent’s own narration into checkable claims, re-runs the referenced command, inspects the test diff and blast radius, then returns one merge decision backed by the evidence that earned it.
 
+**Track:** Developer Tools. **User:** the engineer deciding whether an autonomous coding agent’s pull request is safe to merge.
+
+### Why this is different
+
+Code-review tools try to find more problems in a diff. Receipts answers the trust problem first: *did the agent’s own completion claim survive contact with reality?* That makes the output a single merge decision with an inspectable receipt, not another queue of review comments.
+
 ![A frozen lied-test demo: an agent's “Checkout tests pass” claim is struck through beside the captured test.skip and removed assertion evidence.](assets/lied-test-run-fix.png)
 
 ## Architecture
@@ -53,6 +59,8 @@ npm run evidence -- --fixture=blast-radius-run
 ```
 
 The lied-test case is the shortest demo: the agent says checkout tests pass; Receipts returns `FIX` because the frozen diff contains `test.skip` and a deleted assertion.
+
+For a narrated three-minute submission walkthrough, use [docs/demo-script.md](docs/demo-script.md). For the pre-submission gate, including the required `/feedback` session ID, use [docs/submission-checklist.md](docs/submission-checklist.md).
 
 ## Impact and verification
 
@@ -108,3 +116,9 @@ server/pipeline/             deterministic evidence pipeline and providers
 fixtures/                    frozen transcript, diff, evidence, and verdict demos
 assets/lied-test-run-fix.png captured FIX contradiction screenshot
 ```
+
+## Limitations and next step
+
+Receipts currently verifies commands that it can safely allow-list and reports deterministic evidence from the repository snapshot it was given. It does not claim to replace human code review: its job is to make an agent’s completion summary auditable before that review starts.
+
+The next product validation step is a pilot with developers who review AI-authored pull requests, measuring whether the receipt changes their merge decision or removes a manual verification step. No pilot or productivity percentage is claimed in this repository today.
