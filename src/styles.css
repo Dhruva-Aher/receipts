@@ -4,10 +4,18 @@
 @theme { --font-serif: "Playfair Display", Georgia, serif; --font-sans: "DM Sans", sans-serif; --font-mono: "DM Mono", monospace; }
 body { margin: 0; font-family: var(--font-sans); }
 .eyebrow { font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .11em; text-transform: uppercase; color: #57534e; }
-.evidence-label { font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: #78716c; }
-.evidence-text { margin: .5rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .8125rem; line-height: 1.6; color: #292524; }
+.wordmark { letter-spacing: -.055em; }
+.evidence-label { font-family: var(--font-mono); font-size: .625rem; font-weight: 500; letter-spacing: .15em; text-transform: uppercase; color: #a8a29e; }
+.evidence-text { margin: .7rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .8125rem; line-height: 1.65; color: #292524; }
 .evidence-claim { font-size: .875rem; font-weight: 500; }
-.evidence-actual { color: #1c1917; }
+.evidence-actual { max-height: 17rem; overflow: auto; border-radius: .45rem; background: #1c1917; padding: 1rem 1.05rem; color: #f5f5f4; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+.evidence-card { border: 1px solid #e7e5e4; border-radius: .75rem; background: #fff; }
+.verdict-card { border: 1px solid rgba(41, 37, 36, .08); border-radius: 1rem; box-shadow: 0 1px 0 rgba(41, 37, 36, .04); }
+.verdict-word { font-size: clamp(5.25rem, 17vw, 10.75rem); line-height: .82; letter-spacing: -.085em; }
+.verdict-reason { max-width: 38rem; font-size: .75rem; font-weight: 400; line-height: 1.7; color: color-mix(in srgb, currentColor 63%, transparent); }
+.verdict-merge { color: #064e3b; }
+.verdict-fix { color: #78350f; }
+.verdict-escalate { color: #7f1d1d; }
 .evidence-vs { position: absolute; left: -.58rem; top: -.7rem; display: none; border: 1px solid #e7e5e4; border-radius: 999px; background: white; padding: .12rem .28rem; font-family: var(--font-mono); font-size: .56rem; letter-spacing: .08em; color: #78716c; text-transform: uppercase; }
 @media (min-width: 768px) { .evidence-vs { display: block; top: 1.35rem; } }
 em { color: #a83b32; font-style: italic; }

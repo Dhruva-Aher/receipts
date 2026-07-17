@@ -14,7 +14,7 @@ const samples = [
   { label: 'Fixture · lied test run', transcript: liedTestRun, fixture: 'lied-test-run' },
   { label: 'Fixture · blast radius run', transcript: blastRadiusRun, fixture: 'blast-radius-run' }
 ];
-const verdictColor = { MERGE: 'border-emerald-600 bg-emerald-50 text-emerald-950', FIX: 'border-amber-500 bg-amber-50 text-amber-950', 'RE-RUN': 'border-amber-500 bg-amber-50 text-amber-950', ESCALATE: 'border-red-600 bg-red-50 text-red-950' };
+const verdictColor = { MERGE: 'verdict-merge', FIX: 'verdict-fix', 'RE-RUN': 'verdict-fix', ESCALATE: 'verdict-escalate' };
 const verdictMotionColor = { MERGE: '#ecfdf5', FIX: '#fffbeb', 'RE-RUN': '#fffbeb', ESCALATE: '#fef2f2' };
 const cardMotion = (index) => ({ initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.48 + index * 0.09, duration: 0.25, ease: 'easeOut' } });
 function readableError(error) {
@@ -25,7 +25,7 @@ function readableError(error) {
 
 function EvidenceCard({ item, index }) {
   const caught = item.status === 'contradicted';
-  return <motion.article {...cardMotion(index)} className="border border-stone-200 bg-white p-5">
+  return <motion.article {...cardMotion(index)} className="evidence-card p-5 sm:p-6">
     <div className="grid gap-5 md:grid-cols-[1fr_1fr] md:gap-8">
       <section>
         <p className="evidence-label">Agent claimed</p>
@@ -41,7 +41,7 @@ function EvidenceCard({ item, index }) {
 }
 
 function PipelineFinding({ finding, claim, index }) {
-  return <motion.article {...cardMotion(index)} className="border border-stone-200 bg-white p-5">
+  return <motion.article {...cardMotion(index)} className="evidence-card p-5 sm:p-6">
     <div className="grid gap-5 md:grid-cols-[1fr_1fr] md:gap-8">
       {claim && <section><p className="evidence-label">Agent claimed</p><motion.pre animate={{ color: '#a83b32', textDecorationLine: 'line-through' }} transition={{ delay: 0.7 + index * 0.09, duration: 0.18 }} className="evidence-text evidence-claim">{claim.text}</motion.pre></section>}
       <motion.section initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.69 + index * 0.09, duration: 0.22 }} className={claim ? 'relative border-t border-stone-100 pt-5 md:border-l md:border-t-0 md:pt-0 md:pl-8' : ''}>{claim && <span className="evidence-vs">vs</span>}<p className="evidence-label">Actual result</p><pre className="evidence-text evidence-actual">{finding.line}</pre></motion.section>
@@ -52,7 +52,7 @@ function PipelineFinding({ finding, claim, index }) {
 function BlastRadius({ blastRadius, index }) {
   const hasEvidence = blastRadius?.sensitivePaths?.length || blastRadius?.oversized;
   if (!hasEvidence) return null;
-  return <motion.article {...cardMotion(index)} className="border border-stone-200 bg-white p-5">
+  return <motion.article {...cardMotion(index)} className="evidence-card p-5 sm:p-6">
     <p className="evidence-label">Actual result</p>
     <pre className="evidence-text evidence-actual">{JSON.stringify(blastRadius, null, 2)}</pre>
   </motion.article>;
@@ -84,7 +84,7 @@ function App() {
   const startOver = () => { setState('input'); setReport(null); setError(''); };
 
   return <main className="min-h-screen bg-stone-50 text-stone-900">
-    <header className="border-b border-stone-200 bg-stone-50"><div className="mx-auto flex h-16 max-w-4xl items-center px-6"><span className="font-serif text-2xl font-bold tracking-tight">receipts<span className="text-red-700">.</span></span></div></header>
+    <header className="border-b border-stone-200 bg-stone-50"><div className="mx-auto flex h-16 max-w-4xl items-center px-6"><span className="wordmark font-serif text-2xl font-bold">receipts<span className="text-red-700">.</span></span></div></header>
     <div className="mx-auto flex max-w-4xl justify-center px-6 py-16 sm:py-24">
       {state === 'input' && <form onSubmit={checkRun} className="w-full max-w-2xl space-y-6">
         <div><p className="eyebrow">Agent claim verification</p><h1 className="mt-3 font-serif text-5xl font-semibold tracking-tight sm:text-6xl">Check the work,<br /><em>not the summary.</em></h1></div>
@@ -95,8 +95,8 @@ function App() {
       {state === 'loading' && <section aria-live="polite" className="w-full max-w-2xl border border-stone-200 bg-white p-8 sm:p-12"><p className="eyebrow">Verification in progress</p><h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight">Checking this run</h1><p className="mt-4 max-w-md text-sm leading-6 text-stone-600">The evidence pipeline is processing the transcript and running its checks.</p><div className="mt-8 h-px overflow-hidden bg-stone-200"><motion.div className="h-full bg-stone-700" animate={{ scaleX: [0.08, 0.72, 0.28] }} transition={{ duration: 2.4, ease: 'easeInOut', repeat: Infinity }} style={{ transformOrigin: 'left' }} /></div></section>}
       {state === 'error' && <section aria-live="assertive" className="w-full max-w-2xl border border-red-200 bg-red-50 p-8 sm:p-12"><p className="eyebrow text-red-700">Couldn’t check this run</p><p className="mt-4 font-mono text-sm leading-6 text-red-950">{error}</p><button onClick={startOver} className="mt-7 border border-red-300 px-4 py-2 text-sm font-medium text-red-950">Back to transcript</button></section>}
       <AnimatePresence mode="wait">{state === 'verdict' && report && <motion.section key={report.verdict.verdict} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="w-full max-w-3xl">
-        <motion.div initial={{ opacity: 0, scale: 0.78, backgroundColor: '#fafaf9' }} animate={{ opacity: 1, scale: 1, backgroundColor: verdictMotionColor[report.verdict.verdict] || '#f5f5f4' }} transition={{ scale: { type: 'spring', stiffness: 420, damping: 17, mass: 0.8 }, opacity: { duration: 0.18 }, backgroundColor: { duration: 0.34 } }} className={`border-l-4 p-6 sm:p-9 ${verdictColor[report.verdict.verdict] || 'border-stone-500 text-stone-950'}`}><p className="evidence-label">Verdict</p><h1 className="mt-1 font-serif text-7xl font-semibold leading-none tracking-[-0.07em] sm:text-[8.5rem]">{report.verdict.verdict}</h1>{report.verdict.reason && <pre className="mt-4 whitespace-pre-wrap font-mono text-sm leading-6">{report.verdict.reason}</pre>}</motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45, duration: 0.18 }} className="mt-7 space-y-3"><p className="evidence-label">Evidence</p>{report.claimEvidence?.map((item, index) => <EvidenceCard key={item.claimId} item={item} index={index} />)}{report.weakenedTests?.map((finding, index) => <PipelineFinding key={`${finding.file}-${index}`} finding={finding} index={(report.claimEvidence?.length || 0) + index} claim={report.parsed?.claims?.find((item) => item.type === 'tests_pass')} />)}<BlastRadius blastRadius={report.blastRadius} index={(report.claimEvidence?.length || 0) + (report.weakenedTests?.length || 0)} />{!report.claimEvidence?.length && !report.weakenedTests?.length && !report.blastRadius?.oversized && !report.blastRadius?.sensitivePaths?.length && <p className="text-sm text-stone-600">No evidence was returned.</p>}</motion.div>
+        <motion.div initial={{ opacity: 0, scale: 0.78, backgroundColor: '#fafaf9' }} animate={{ opacity: 1, scale: 1, backgroundColor: verdictMotionColor[report.verdict.verdict] || '#f5f5f4' }} transition={{ scale: { type: 'spring', stiffness: 420, damping: 17, mass: 0.8 }, opacity: { duration: 0.18 }, backgroundColor: { duration: 0.34 } }} className={`verdict-card p-7 sm:p-11 ${verdictColor[report.verdict.verdict] || 'text-stone-950'}`}><p className="evidence-label">Verdict</p><h1 className="verdict-word mt-2 font-serif font-semibold">{report.verdict.verdict}</h1>{report.verdict.reason && <pre className="verdict-reason mt-7 whitespace-pre-wrap font-mono">{report.verdict.reason}</pre>}</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45, duration: 0.18 }} className="mt-16 space-y-4"><p className="evidence-label">Evidence</p>{report.claimEvidence?.map((item, index) => <EvidenceCard key={item.claimId} item={item} index={index} />)}{report.weakenedTests?.map((finding, index) => <PipelineFinding key={`${finding.file}-${index}`} finding={finding} index={(report.claimEvidence?.length || 0) + index} claim={report.parsed?.claims?.find((item) => item.type === 'tests_pass')} />)}<BlastRadius blastRadius={report.blastRadius} index={(report.claimEvidence?.length || 0) + (report.weakenedTests?.length || 0)} />{!report.claimEvidence?.length && !report.weakenedTests?.length && !report.blastRadius?.oversized && !report.blastRadius?.sensitivePaths?.length && <p className="text-sm text-stone-600">No evidence was returned.</p>}</motion.div>
         <button onClick={startOver} className="mt-10 border border-stone-300 bg-white px-4 py-2 text-sm font-medium">Check another run</button>
       </motion.section>}</AnimatePresence>
     </div>
