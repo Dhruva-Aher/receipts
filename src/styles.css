@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,600;0,700&display=swap');
+@import "tailwindcss";
+
+@theme { --font-serif: "Playfair Display", Georgia, serif; --font-sans: "DM Sans", sans-serif; --font-mono: "DM Mono", monospace; }
+body { margin: 0; font-family: var(--font-sans); }
+.eyebrow { font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .11em; text-transform: uppercase; color: #57534e; }
+.evidence-label { font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: #78716c; }
+.evidence-text { margin: .5rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .8125rem; line-height: 1.6; color: #292524; }
+.evidence-claim { font-size: .875rem; font-weight: 500; }
+.evidence-actual { color: #1c1917; }
+.evidence-vs { position: absolute; left: -.58rem; top: -.7rem; display: none; border: 1px solid #e7e5e4; border-radius: 999px; background: white; padding: .12rem .28rem; font-family: var(--font-mono); font-size: .56rem; letter-spacing: .08em; color: #78716c; text-transform: uppercase; }
+@media (min-width: 768px) { .evidence-vs { display: block; top: 1.35rem; } }
+em { color: #a83b32; font-style: italic; }
