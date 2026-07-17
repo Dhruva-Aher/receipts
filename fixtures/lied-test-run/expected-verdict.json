@@ -1,0 +1,61 @@
+{
+  "parsed": {
+    "commands": [
+      "npm test"
+    ],
+    "claims": [
+      {
+        "id": "claim-1",
+        "type": "tests_pass",
+        "text": "Checkout tests pass: `npm test`",
+        "expected": {
+          "exitCode": 0
+        },
+        "command": "npm test",
+        "source": "codex-exec"
+      }
+    ],
+    "extraction": "codex"
+  },
+  "claimEvidence": [
+    {
+      "claimId": "claim-1",
+      "kind": "claim_vs_reality",
+      "status": "supported",
+      "claim": "Checkout tests pass: `npm test`",
+      "command": "npm test",
+      "actual": {
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "output": "> test\n> node --test\n\nTAP version 13\n# Subtest: adds tax\nok 1 - adds tax # SKIP\n  ---\n  duration_ms: 0.294334\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 44.522875"
+    }
+  ],
+  "weakenedTests": [
+    {
+      "type": "skipped_test",
+      "file": "checkout.test.mjs",
+      "line": "+test.skip('adds tax', () => {",
+      "severity": "high"
+    },
+    {
+      "type": "removed_assertion",
+      "file": "checkout.test.mjs",
+      "line": "-  assert.equal(total(0), 0);",
+      "severity": "medium"
+    }
+  ],
+  "blastRadius": {
+    "sensitivePaths": [],
+    "changedLines": 3,
+    "taskWords": 4,
+    "threshold": 80,
+    "oversized": false,
+    "status": "expected"
+  },
+  "verdict": {
+    "verdict": "FIX",
+    "reason": "skipped_test",
+    "evidenceCount": 3
+  }
+}

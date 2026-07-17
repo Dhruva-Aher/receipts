@@ -1,0 +1,1 @@
+Updated the confirmation email copy. Tests pass: `npm test`

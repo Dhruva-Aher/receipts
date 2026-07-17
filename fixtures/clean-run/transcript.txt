@@ -1,0 +1,3 @@
+Implemented name trimming in the greeting.
+
+Tests passed: `npm test`

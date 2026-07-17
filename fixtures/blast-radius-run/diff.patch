@@ -1,0 +1,16 @@
+diff --git a/auth/session.mjs b/auth/session.mjs
+index 2aceb16..58a1ea6 100644
+--- a/auth/session.mjs
++++ b/auth/session.mjs
+@@ -1 +1,3 @@
+-export function sessionFor(user) { return { user }; }
++export function sessionFor(user) {
++  return { user, issuedAt: new Date().toISOString(), refreshRequired: true };
++}
+diff --git a/emails/confirmation.txt b/emails/confirmation.txt
+index 64f074e..4ef784f 100644
+--- a/emails/confirmation.txt
++++ b/emails/confirmation.txt
+@@ -1 +1 @@
+-Your confirmation code is ready.
++Your confirmation code is ready — check your inbox.

@@ -1,0 +1,2 @@
+M	auth/session.mjs
+M	emails/confirmation.txt

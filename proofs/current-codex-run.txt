@@ -1,0 +1,4 @@
+Codex implementation note — 2026-07-17
+
+The production build passed after implementing the evidence pipeline.
+Ran: npm run build
