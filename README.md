@@ -12,7 +12,27 @@ Receipts turns an agent’s own narration into checkable claims, re-runs the ref
 
 Code-review tools try to find more problems in a diff. Receipts answers the trust problem first: *did the agent’s own completion claim survive contact with reality?* That makes the output a single merge decision with an inspectable receipt, not another queue of review comments.
 
-![A frozen lied-test demo: an agent's “Checkout tests pass” claim is struck through beside the captured test.skip and removed assertion evidence.](assets/lied-test-run-fix.png)
+## Fixture-driven verdicts
+
+These are captures from the running UI after selecting the repository’s frozen fixtures. The screen shows the exact verdict and evidence returned by the pipeline—no mocked card content or hand-written result text.
+
+### Clean run → MERGE
+
+The captured `npm test` command exits successfully and the frozen diff has no weakened-test or blast-radius finding.
+
+![MERGE verdict from the clean-run fixture, with the captured test command output rendered in the evidence terminal.](assets/clean-run-merge.jpg)
+
+### Claimed tests pass, but the diff weakens them → FIX
+
+The claim is struck through beside the captured `test.skip` and removed-assertion findings from `lied-test-run`.
+
+![FIX evidence from the lied-test-run fixture: the agent's Checkout tests pass claim is struck through next to the captured test.skip and removed assertion.](assets/lied-test-run-fix.png)
+
+### Sensitive path changed → ESCALATE
+
+Even with a supported test claim, `blast-radius-run` escalates because its captured diff modifies `auth/session.mjs`.
+
+![ESCALATE verdict from the blast-radius-run fixture, with test output and sensitive-path evidence.](assets/blast-radius-escalate.jpg)
 
 ## Architecture
 
@@ -136,7 +156,7 @@ This was iterative development, not one-shot generation.
 src/                         React/Tailwind/Framer Motion verdict UI
 server/pipeline/             deterministic evidence pipeline and providers
 fixtures/                    frozen transcript, diff, evidence, and verdict demos
-assets/lied-test-run-fix.png captured FIX contradiction screenshot
+assets/                      captured fixture-driven MERGE, FIX, and ESCALATE examples
 ```
 
 ## Limitations and next step
