@@ -35,6 +35,14 @@ Codex is essential at the interpretation boundary: free-form agent narration mus
 
 Prerequisites: Node.js and an authenticated Codex CLI session. The default provider invokes `codex exec` non-interactively; no `OPENAI_API_KEY` is required.
 
+### Supported platforms
+
+| Platform | Status | Notes |
+| --- | --- | --- |
+| macOS | Supported and verified | Development and frozen-fixture verification run on macOS. |
+| Linux | Supported | Requires Node.js, Git, and the authenticated Codex CLI on a POSIX shell. |
+| Windows | Not currently supported | The fixture capture/test path expects POSIX tooling. |
+
 ```bash
 npm install
 npm run evidence:server
@@ -47,6 +55,20 @@ npm run dev
 ```
 
 Open the Vite URL, choose a frozen fixture, and select **Check this run**.
+
+### Judge quickstart — no rebuild or Codex credits required
+
+The frozen fixtures replay captured transcript, command evidence, and Git-diff inputs. They do not call Codex, re-run a sandbox command, inspect the current repository, or require an API key.
+
+```bash
+npm ci
+npm run evidence -- --fixture=lied-test-run
+npm run test:pipeline
+```
+
+Expected fixture verdicts are `MERGE` (`clean-run`), `FIX` (`lied-test-run`), and `ESCALATE` (`blast-radius-run`). This is the fastest way to judge the product logic without rebuilding or configuring a live agent environment.
+
+To try the rendered UI without a production build, start `npm run evidence:server` and `npm run dev`, then choose one of the three **Fixture** options in the sample-run dropdown.
 
 ## The demo moment
 

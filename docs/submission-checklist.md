@@ -7,6 +7,7 @@
 - [x] Codex is used in product runtime through `CodexProvider`.
 - [x] The exact observed runtime identifier is `gpt-5.6-terra via authenticated Codex CLI`.
 - [x] README includes setup, frozen sample data, and a testing path.
+- [x] README documents supported platforms and a no-rebuild frozen-fixture path for judges.
 - [ ] Run `/feedback` in the primary Codex build session and record the returned session ID in the Devpost submission. Do not substitute a diagnostic-session ID.
 
 ## Required submission artifacts
