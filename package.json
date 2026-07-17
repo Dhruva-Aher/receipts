@@ -1,0 +1,23 @@
+{
+  "name": "receipts-build-week",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "evidence": "node server/evidence-cli.mjs",
+    "evidence:server": "node server/server.mjs",
+    "test:pipeline": "node --test server/**/*.test.mjs"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "latest",
+    "framer-motion": "^12.42.2",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwindcss": "^4.3.3",
+    "vite": "latest"
+  }
+}
