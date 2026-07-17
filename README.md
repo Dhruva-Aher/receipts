@@ -10,6 +10,18 @@ This is a real end-to-end capture, not a frozen fixture: [the source Codex trans
 
 **Track:** Developer Tools. **User:** the engineer deciding whether an autonomous coding agent’s pull request is safe to merge.
 
+### Measured live run
+
+Captured July 17, 2026 on the included disposable checkout using the source transcript above. These are measured stage durations—not estimates:
+
+| Stage | Duration |
+| --- | ---: |
+| Codex claim extraction | 9,876 ms |
+| Local command verification | 214 ms |
+| Git-diff inspection | 61 ms |
+| Receipt export | 1 ms |
+| End to end | 10,152 ms |
+
 ## The problem
 
 CI tells you whether tests passed. **Receipts tells you whether the AI truthfully described what it actually did.**
@@ -31,14 +43,6 @@ AI is used precisely where deterministic software cannot help: translating free-
 ![The trust boundary: Codex interprets the transcript; everything afterward runs locally and produces executable proof.](assets/trust-boundary.svg)
 
 Only the transcript is sent to the authenticated Codex CLI claim extractor in an isolated read-only temporary directory. Source code stays on the machine; referenced commands and Git-diff checks run locally.
-
-## More real fixture examples
-
-The following are captures from the running UI after selecting frozen fixtures; every value comes from their pipeline reports.
-
-| Clean verification | Sensitive-path escalation |
-| --- | --- |
-| ![MERGE verdict from the clean-run fixture.](assets/clean-run-merge.jpg) | ![ESCALATE verdict from the blast-radius-run fixture.](assets/blast-radius-escalate.jpg) |
 
 ## Setup
 
@@ -81,20 +85,6 @@ To try the rendered UI without a production build, start `npm run evidence:serve
 
 Receipts also keeps the last 20 actual local verification summaries in `.receipts/history.json` (ignored by Git). The UI shows only real verdicts, extracted-claim counts, evidence counts, and timestamps—never guessed agent identities or synthetic trend data.
 
-## The demo moment
-
-Run the deterministic cases without reading the current working tree:
-
-```bash
-npm run evidence -- --fixture=clean-run
-npm run evidence -- --fixture=lied-test-run
-npm run evidence -- --fixture=blast-radius-run
-```
-
-The lied-test case is the shortest demo: the agent says checkout tests pass; Receipts returns `FIX` because the frozen diff contains `test.skip` and a deleted assertion.
-
-For a narrated three-minute submission walkthrough, use [docs/demo-script.md](docs/demo-script.md). For the pre-submission gate, including the required `/feedback` session ID, use [docs/submission-checklist.md](docs/submission-checklist.md).
-
 ## Impact and verification
 
 Receipts eliminates the manual step of re-running an agent-claimed command and separately inspecting its test diff by hand. Each frozen fixture contains one captured executable claim, its captured command evidence, a frozen Git diff, and its expected verdict:
@@ -125,6 +115,8 @@ npm run evidence -- --fixture=lied-test-run --output=receipt.json
 ```
 
 The fixture test replays all three reports twice and asserts byte-stable evidence output, so demo behavior does not depend on the repository’s current `HEAD` or working tree.
+
+For the narrated three-minute submission walkthrough, use [docs/demo-script.md](docs/demo-script.md). For the pre-submission gate, including the required `/feedback` session ID, use [docs/submission-checklist.md](docs/submission-checklist.md).
 
 ## Claim-extraction providers
 
