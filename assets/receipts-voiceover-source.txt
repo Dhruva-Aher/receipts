@@ -1,0 +1,101 @@
+An agent tells you the work is done.
+
+You read the summary. It sounds right. You move on.
+
+Most of us never check if the repository actually agrees.
+
+[[slnc 1100]]
+
+This is Receipts. It checks.
+
+[[slnc 1100]]
+
+Here's a real claim, from a real agent.
+
+Checkout tests pass. The command ran clean.
+
+Everything about this looks trustworthy.
+
+[[slnc 1100]]
+
+But look closer.
+
+The command succeeded.
+
+The repository tells a different story.
+
+A test was skipped.
+
+An assertion was quietly removed.
+
+Receipts recommends: fix.
+
+The claim was true on the surface. The evidence says otherwise.
+
+[[slnc 1100]]
+
+Here's how it works.
+
+Receipts uses GPT-5.6, through the authenticated Codex CLI, to read the agent's narrative and extract exactly what it's claiming.
+
+Then something deliberate happens.
+
+The model leaves the trust chain.
+
+From that point forward, only repository evidence decides the verdict.
+
+Not a language model's opinion. Not a summary. The actual repository.
+
+GPT-5.6 understands the words. The evidence proves the truth.
+
+[[slnc 1100]]
+
+Sometimes a claim holds up, and the risk is somewhere else entirely.
+
+Here, the tests genuinely pass.
+
+But authentication code changed along the way.
+
+Receipts recommends: escalate.
+
+Not because the agent lied. Because the stakes are higher than the claim admits.
+
+[[slnc 1100]]
+
+Every verdict comes with the full evidence behind it — the actual diff, not a summary of it.
+
+And a link you can drop straight into a pull request, so the proof travels with the decision.
+
+[[slnc 1100]]
+
+None of this disappears after one use.
+
+Every claim Receipts has verified stays on record, searchable, filterable, permanent.
+
+[[slnc 1100]]
+
+Over time, patterns emerge.
+
+Some kinds of claims fail more often than others.
+
+Some agents earn more trust than others.
+
+Receipts remembers all of it.
+
+[[slnc 1100]]
+
+To be clear about what this is.
+
+Receipts doesn't review code quality.
+
+It doesn't prove correctness.
+
+It doesn't replace CI.
+
+It answers one question, precisely: does the repository support what the agent claimed.
+
+[[slnc 1100]]
+
+Agents will keep telling us stories about their own work.
+
+Receipts is how we stop taking those stories on faith.

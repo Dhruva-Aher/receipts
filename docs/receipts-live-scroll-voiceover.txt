@@ -1,0 +1,61 @@
+An agent tells you the work is done.
+
+You read the summary. It sounds right. You move on.
+
+Most of us never check if the repository actually agrees.
+
+[pause]
+
+This is Receipts. It checks.
+
+[pause]
+
+Checkout tests pass: npm test. The command ran clean.
+
+But look closer.
+
+The test was skipped. The assertion was removed.
+
+Claim not supported. Do not merge — fix required.
+
+[pause]
+
+Receipts calls GPT-5.6 Terra, through the authenticated Codex CLI, in a read-only sandbox.
+
+Its only job is to extract the claim. It's told not to run commands, not to inspect files, not to use tools.
+
+Once it returns that claim, the model is finished. No second model call happens.
+
+Receipts re-runs the actual commands, pulls the real diff, and computes the verdict from evidence alone.
+
+GPT-5.6 reads the words. The repository decides the truth.
+
+[pause]
+
+Tests pass: npm test. That part is true.
+
+But a sensitive path changed: auth slash session dot mjs.
+
+Human decision needed. Escalate before merge.
+
+[pause]
+
+Nothing here disappears after one use.
+
+Receipts has verified nineteen claims so far. Two merged. Thirteen needed a fix. Four were escalated. Every one on record, searchable, permanent.
+
+One agent in this ledger has never once passed clean — zero verified, three fixed, one escalated.
+
+Receipts remembers that.
+
+[pause]
+
+Receipts doesn't review code quality. Doesn't prove correctness. Doesn't replace CI.
+
+It answers one question: does the repository support what the agent claimed.
+
+[pause]
+
+Agents will keep telling us stories about their own work.
+
+Receipts is how we stop taking those stories on faith.

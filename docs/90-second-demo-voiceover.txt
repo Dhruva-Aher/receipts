@@ -1,0 +1,73 @@
+Checkout task complete.
+
+Tests passed.
+
+Npm test exited successfully.
+
+Can you prove it?
+
+Receipts asks the repository, not the model.
+
+It starts with the agent’s claim.
+
+Then it brings in repository evidence.
+
+Here, the command really did succeed.
+
+But the checkout test was skipped.
+
+An assertion was removed.
+
+The agent’s story sounded complete.
+
+The repository supplied missing context.
+
+The receipt shows the claim beside its evidence.
+
+Nothing is hidden behind a confidence score.
+
+The reviewer can inspect the exact reason.
+
+Receipts keeps both facts visible.
+
+That is why the recommendation is FIX.
+
+GPT-5.6 extracts the claim from free-form narration.
+
+Then the model leaves the trust chain.
+
+Repository evidence decides the recommendation.
+
+The same pattern catches sensitive paths.
+
+This replay changes auth slash session dot mjs.
+
+The command claim held.
+
+The right recommendation is ESCALATE.
+
+That means human attention, not a vulnerability finding.
+
+Receipts does not review code quality.
+
+It does not prove correctness.
+
+It does not replace CI.
+
+It does not guarantee security.
+
+It answers one narrower question.
+
+Does repository evidence support what the agent said?
+
+Narrative becomes claims.
+
+Claims become evidence.
+
+Evidence becomes a decision.
+
+Receipts is for engineers merging agent work.
+
+AI agents tell stories.
+
+Receipts checks whether repository evidence supports them.
