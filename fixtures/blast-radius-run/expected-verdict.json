@@ -42,6 +42,7 @@
     "changedLines": 6,
     "taskWords": 4,
     "threshold": 80,
+    "scopeStatus": "assessed",
     "oversized": false,
     "status": "surprise"
   },
@@ -49,5 +50,6 @@
     "verdict": "ESCALATE",
     "reason": "auth/session.mjs",
     "evidenceCount": 2
-  }
+  },
+  "replay": { "capturedAt": "July 17, 2026" }
 }

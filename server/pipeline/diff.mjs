@@ -16,13 +16,16 @@ export async function gitDiff(cwd, base = 'HEAD') {
     const patches = await Promise.all(paths.map((path) => exec('git', ['diff', '--no-index', '--unified=0', '/dev/null', path], { cwd }).then((r) => r.stdout).catch((error) => error.stdout || '')));
     return { files: paths.map((path) => ({ status: 'A', path })), patch: patches.join('\n'), stat: '' };
   }
-  const [{ stdout: nameStatus }, { stdout: patch }, { stdout: stat }] = await Promise.all([
+  const [{ stdout: nameStatus }, { stdout: patch }, { stdout: stat }, { stdout: untrackedOutput }] = await Promise.all([
     exec('git', ['diff', '--name-status', base], { cwd }),
     exec('git', ['diff', '--unified=0', base], { cwd }),
-    exec('git', ['diff', '--stat', base], { cwd }).catch(() => ({ stdout: '' }))
+    exec('git', ['diff', '--stat', base], { cwd }).catch(() => ({ stdout: '' })),
+    exec('git', ['ls-files', '--others', '--exclude-standard'], { cwd })
   ]);
-  const files = nameStatus.split('\n').filter(Boolean).map((line) => { const [status, ...parts] = line.split('\t'); return { status, path: parts.at(-1) }; });
-  return { files, patch, stat };
+  const untracked = untrackedOutput.split('\n').filter(Boolean);
+  const untrackedPatches = await Promise.all(untracked.map((path) => exec('git', ['diff', '--no-index', '--unified=0', '/dev/null', path], { cwd }).then((r) => r.stdout).catch((error) => error.stdout || '')));
+  const files = [...nameStatus.split('\n').filter(Boolean).map((line) => { const [status, ...parts] = line.split('\t'); return { status, path: parts.at(-1) }; }), ...untracked.map((path) => ({ status: 'A', path }))];
+  return { files, patch: [patch, ...untrackedPatches].filter(Boolean).join('\n'), stat };
 }
 
 export function detectWeakenedTests(diff) {
@@ -42,6 +45,8 @@ export function classifyBlastRadius(diff, taskDescription = '') {
   const sensitive = diff.files.filter((file) => sensitivePath.test(file.path));
   const changedLines = (diff.patch.match(/^[+-](?![+-])/gm) || []).length;
   const taskWords = taskDescription.trim().split(/\s+/).filter(Boolean).length;
-  const threshold = Math.max(80, taskWords * 7);
-  return { sensitivePaths: sensitive, changedLines, taskWords, threshold, oversized: changedLines > threshold, status: sensitive.length || changedLines > threshold ? 'surprise' : 'expected' };
+  const scopeStatus = taskWords ? 'assessed' : 'unassessed';
+  const threshold = taskWords ? Math.max(80, taskWords * 7) : null;
+  const oversized = threshold !== null && changedLines > threshold;
+  return { sensitivePaths: sensitive, changedLines, taskWords, threshold, scopeStatus, oversized, status: sensitive.length || oversized ? 'surprise' : 'expected' };
 }

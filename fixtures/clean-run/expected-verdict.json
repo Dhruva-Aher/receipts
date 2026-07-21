@@ -37,6 +37,7 @@
     "changedLines": 2,
     "taskWords": 5,
     "threshold": 80,
+    "scopeStatus": "assessed",
     "oversized": false,
     "status": "expected"
   },
@@ -44,5 +45,6 @@
     "verdict": "MERGE",
     "reason": "Every executable claim was supported by its re-run.",
     "evidenceCount": 1
-  }
+  },
+  "replay": { "capturedAt": "July 17, 2026" }
 }

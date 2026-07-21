@@ -36,5 +36,5 @@ export async function verifyFixture(name) {
   const parsed = { ...expected.parsed, commands: commandsFromTranscript(transcript) };
   const claimEvidence = expected.claimEvidence;
   const verdict = makeVerdict({ claimEvidence, weakenedTests, blastRadius });
-  return { parsed, claimEvidence, weakenedTests, blastRadius, verdict };
+  return { parsed, claimEvidence, weakenedTests, blastRadius, verdict, replay: { capturedAt: config.capturedAt || 'Unknown' } };
 }
