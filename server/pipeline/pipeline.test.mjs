@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { extractClaims, extractClaimsLocally, MAX_TRANSCRIPT_CHARS, validateTranscript } from './transcript.mjs';
-import { rerunCommand, evaluateCommandClaim } from './runner.mjs';
+import { rerunCommand, evaluateCommandClaim, validateCommand } from './runner.mjs';
 import { gitDiff, detectWeakenedTests, classifyBlastRadius } from './diff.mjs';
 import { makeVerdict } from './verdict.mjs';
 import { receiptMarkdown } from '../receipt-export.mjs';
@@ -14,6 +14,7 @@ import { CodexProvider, parseCodexClaims } from './codex.mjs';
 import { createClaimExtractor, DEFAULT_PROVIDER } from './providers/index.mjs';
 import { verifyFixture } from './fixture.mjs';
 import { LocalProvider } from './providers/local-provider.mjs';
+import { verifyRun } from './index.mjs';
 const exec = promisify(execFile);
 
 test('extracts executable claims from narration rather than a hardcoded list', () => {
@@ -35,7 +36,7 @@ test('handles empty, uncheckable, large, multilingual, and multi-command transcr
 
 test('captures true and false outcomes from real process execution', async () => {
   const trueClaim = extractClaimsLocally('Command passed.\nRan: node --version').claims[0];
-  const falseClaim = extractClaimsLocally('Command passed.\nRan: node --definitely-not-a-node-option').claims[0];
+  const falseClaim = extractClaimsLocally('Command passed.\nRan: node --test missing.test.mjs').claims[0];
   const trueEvidence = evaluateCommandClaim(trueClaim, await rerunCommand(trueClaim.command));
   const falseEvidence = evaluateCommandClaim(falseClaim, await rerunCommand(falseClaim.command));
   assert.equal(trueEvidence.status, 'supported');
@@ -48,10 +49,33 @@ test('captures missing working directories and long commands without hanging', a
   assert.match(missingCwd.stderr, /Command could not start: node/);
   assert.equal(evaluateCommandClaim({ id: 'missing', text: 'Build passed', expected: { exitCode: 0 } }, missingCwd).status, 'inconclusive');
   const repo = await mkdtemp(join(tmpdir(), 'receipts-timeout-'));
-  await writeFile(join(repo, 'hang.mjs'), 'setInterval(() => {}, 1000);\n');
-  const timedOut = await rerunCommand('node hang.mjs', { cwd: repo, timeoutMs: 50 });
+  await writeFile(join(repo, 'hang.test.mjs'), "import test from 'node:test';\ntest('hang', async () => new Promise(() => {}));\n");
+  const timedOut = await rerunCommand('node --test hang.test.mjs', { cwd: repo, timeoutMs: 1 });
   assert.equal(timedOut.timedOut, true);
   assert.equal(evaluateCommandClaim({ id: 'slow', text: 'Tests passed', expected: { exitCode: 0 } }, timedOut).status, 'inconclusive');
+});
+
+test('allows only supported verification commands and caps collected output', async () => {
+  assert.doesNotThrow(() => validateCommand('npm run build'));
+  assert.doesNotThrow(() => validateCommand('node --test checkout.test.mjs'));
+  assert.throws(() => validateCommand('npm install'));
+  assert.throws(() => validateCommand('npm exec untrusted-package'));
+  assert.throws(() => validateCommand('node -e process.exit(0)'));
+  const repo = await mkdtemp(join(tmpdir(), 'receipts-output-cap-'));
+  await writeFile(join(repo, 'package.json'), '{"scripts":{"test":"node loud.mjs"}}\n');
+  await writeFile(join(repo, 'loud.mjs'), "process.stdout.write('x'.repeat(70 * 1024));\n");
+  const run = await rerunCommand('npm test', { cwd: repo });
+  assert.equal(run.outputTruncated, true);
+  assert.ok(Buffer.byteLength(run.stdout) <= 64 * 1024);
+});
+
+test('returns RE-RUN for extracted claims without deterministic evidence', async () => {
+  const provider = { id: 'test', async extract() { return [{ id: 'claim-1', type: 'no_breaking_change', text: 'No breaking changes.', expected: { sensitiveChanges: false } }]; } };
+  const repo = await mkdtemp(join(tmpdir(), 'receipts-unsupported-'));
+  await exec('git', ['init'], { cwd: repo });
+  const report = await verifyRun({ transcript: 'No breaking changes.', cwd: repo, provider });
+  assert.equal(report.claimEvidence[0].status, 'inconclusive');
+  assert.equal(report.verdict.verdict, 'RE-RUN');
 });
 
 test('accepts structured claim extraction from Codex stdout', () => {
@@ -133,6 +157,21 @@ test('handles no repository, empty history, unchanged, binary, renamed, and larg
   const large = classifyBlastRadius({ files: [], patch: '+line\n'.repeat(100_000) }, 'small task');
   assert.equal(large.oversized, true);
   assert.equal(large.changedLines, 100_000);
+});
+
+test('includes untracked files in repository evidence and sensitive-path checks', async () => {
+  const repo = await mkdtemp(join(tmpdir(), 'receipts-untracked-'));
+  await exec('git', ['init'], { cwd: repo });
+  await exec('git', ['config', 'user.email', 'proof@example.test'], { cwd: repo });
+  await exec('git', ['config', 'user.name', 'Receipts Proof'], { cwd: repo });
+  await writeFile(join(repo, 'baseline.txt'), 'baseline\n');
+  await exec('git', ['add', '.'], { cwd: repo }); await exec('git', ['commit', '-m', 'baseline'], { cwd: repo });
+  await (await import('node:fs/promises')).mkdir(join(repo, '.github', 'workflows'), { recursive: true });
+  await writeFile(join(repo, '.github', 'workflows', 'deploy.yml'), 'name: deploy\n');
+  const diff = await gitDiff(repo);
+  assert.deepEqual(diff.files, [{ status: 'A', path: '.github/workflows/deploy.yml' }]);
+  assert.match(diff.patch, /deploy\.yml/);
+  assert.equal(classifyBlastRadius(diff, 'Update deployment').sensitivePaths[0].path, '.github/workflows/deploy.yml');
 });
 
 test('documents conservative verdict priority for missing and conflicting evidence', () => {
