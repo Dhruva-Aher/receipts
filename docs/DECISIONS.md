@@ -3,7 +3,7 @@
 Status legend: **PROPOSED** ≠ **DECIDED** ≠ **IMPLEMENTED** ≠ **VERIFIED**  
 Related: [METRICS.md](./METRICS.md)
 
-**Cross-verify (2026-09-30):** FIX fixture + Codex transcript Grade **A**. Stage timings Grade **C** (README-only). Pipeline tests **11/15** passing — do not pitch full green CI until fixed.
+**Cross-verify (2026-09-30):** FIX fixture + Codex transcript Grade **A**. Local stage timings Grade **A** archived. Codex e2e timings Grade **C** archived. Pipeline tests **15/15** after sandbox-safe `git init --template=`.
 
 ---
 
@@ -57,10 +57,22 @@ Related: [METRICS.md](./METRICS.md)
 
 ---
 
-## D5 — Do not claim green suite while tests fail
+## D5 — Sandbox-safe `git init --template=` in tests
 
 | | |
 |--|--|
-| **Context** | 2026-09-30 local run: 4 failing pipeline tests. |
-| **Decision** | README/CI badge ≠ “all tests pass”; METRICS records current fail count. |
-| **Status** | DECIDED · VERIFIED (observation) |
+| **Context** | `git init` failed under restricted sandboxes writing default hooks (`Operation not permitted`). |
+| **Decision** | Tests call `git init --template=` so no hook templates are copied. |
+| **Evidence** | `server/pipeline/pipeline.test.mjs` helper; **15/15** pass |
+| **Status** | DECIDED · IMPLEMENTED · VERIFIED |
+
+---
+
+## D6 — Dual timing artifacts (local A + Codex C)
+
+| | |
+|--|--|
+| **Context** | Codex extract dominates e2e and needs auth to reproduce. |
+| **Decision** | Archive LocalProvider timings as Grade A; keep July 17 Codex numbers as Grade C JSON. |
+| **Evidence** | `docs/evidence/stage-timings-*.json` |
+| **Status** | DECIDED · IMPLEMENTED · VERIFIED |

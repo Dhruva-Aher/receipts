@@ -10,7 +10,8 @@
     "evidence": "node server/evidence-cli.mjs",
     "evidence:server": "node server/server.mjs",
     "test:pipeline": "node --test server/**/*.test.mjs",
-    "verify": "npm run test:pipeline && npm run build"
+    "verify": "npm run test:pipeline && npm run build",
+    "measure:timings": "node scripts/capture-stage-timings.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

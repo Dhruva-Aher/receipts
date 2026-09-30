@@ -27,17 +27,19 @@ This is a real UI capture of the reproducible `lied-test-run` fixture. Its trans
 
 **Track:** Developer Tools. **User:** the engineer deciding whether an autonomous coding agent’s pull request is safe to merge.
 
-### Measured live run
+### Measured stage timings
 
-Captured July 17, 2026 on the included disposable checkout using the source transcript above. These are measured stage durations—not estimates:
+**Local proof (Grade A — 2026-09-30):** LocalProvider on a disposable lied checkout — extract **1 ms**, command verify **192 ms**, diff **40 ms**, export **~0 ms**, total **233 ms**. Artifact: [`docs/evidence/stage-timings-local-2026-09-30.json`](docs/evidence/stage-timings-local-2026-09-30.json). Suite: **15/15** pass (`git init --template=` sandbox-safe).
 
-| Stage | Duration |
-| --- | ---: |
-| Codex claim extraction | 9,876 ms |
-| Local command verification | 214 ms |
-| Git-diff inspection | 61 ms |
-| Receipt export | 1 ms |
-| End to end | 10,152 ms |
+**Historical Codex run (Grade C — 2026-07-17):** extract **9,876 ms** · verify **214 ms** · diff **61 ms** · export **1 ms** · e2e **10,152 ms**. Artifact: [`docs/evidence/stage-timings-codex-2026-07-17.json`](docs/evidence/stage-timings-codex-2026-07-17.json) (Codex-auth required to re-run).
+
+| Stage | Local (A) | Codex historical (C) |
+| --- | ---: | ---: |
+| Claim extraction | 1 ms | 9,876 ms |
+| Command verification | 192 ms | 214 ms |
+| Git-diff inspection | 40 ms | 61 ms |
+| Receipt export | ~0 ms | 1 ms |
+| End to end | 233 ms | 10,152 ms |
 
 ## The problem
 
