@@ -17,6 +17,12 @@ import { LocalProvider } from './providers/local-provider.mjs';
 import { verifyRun } from './index.mjs';
 const exec = promisify(execFile);
 
+/** Sandbox-safe git init (empty template avoids writing hooks that may be denied). */
+async function gitInit(cwd) {
+  await exec('git', ['init', '--template='], { cwd });
+}
+
+
 test('extracts executable claims from narration rather than a hardcoded list', () => {
   const result = extractClaimsLocally('I completed the task. Build passed. No breaking changes.\nRan: npm run build');
   assert.equal(result.claims.length, 2);
@@ -72,7 +78,7 @@ test('allows only supported verification commands and caps collected output', as
 test('returns RE-RUN for extracted claims without deterministic evidence', async () => {
   const provider = { id: 'test', async extract() { return [{ id: 'claim-1', type: 'no_breaking_change', text: 'No breaking changes.', expected: { sensitiveChanges: false } }]; } };
   const repo = await mkdtemp(join(tmpdir(), 'receipts-unsupported-'));
-  await exec('git', ['init'], { cwd: repo });
+  await gitInit(repo);
   const report = await verifyRun({ transcript: 'No breaking changes.', cwd: repo, provider });
   assert.equal(report.claimEvidence[0].status, 'inconclusive');
   assert.equal(report.verdict.verdict, 'RE-RUN');
@@ -119,7 +125,7 @@ test('replays frozen demo fixtures with byte-stable evidence', async () => {
 
 test('flags weakened test logic from an actual git diff', async () => {
   const repo = await mkdtemp(join(tmpdir(), 'receipts-real-diff-'));
-  await exec('git', ['init'], { cwd: repo });
+  await gitInit(repo);
   await exec('git', ['config', 'user.email', 'proof@example.test'], { cwd: repo });
   await exec('git', ['config', 'user.name', 'Receipts Proof'], { cwd: repo });
   await writeFile(join(repo, 'checkout.test.js'), "import test from 'node:test';\ntest('tax', () => { assert.equal(total, 3); });\n");
@@ -137,7 +143,7 @@ test('handles no repository, empty history, unchanged, binary, renamed, and larg
   const notRepo = await mkdtemp(join(tmpdir(), 'receipts-not-repo-'));
   await assert.rejects(gitDiff(notRepo), /not a Git repository/);
   const emptyRepo = await mkdtemp(join(tmpdir(), 'receipts-empty-repo-'));
-  await exec('git', ['init'], { cwd: emptyRepo });
+  await gitInit(emptyRepo);
   const emptyDiff = await gitDiff(emptyRepo);
   assert.deepEqual(emptyDiff.files, []);
   assert.deepEqual(detectWeakenedTests(emptyDiff), []);
@@ -161,7 +167,7 @@ test('handles no repository, empty history, unchanged, binary, renamed, and larg
 
 test('includes untracked files in repository evidence and sensitive-path checks', async () => {
   const repo = await mkdtemp(join(tmpdir(), 'receipts-untracked-'));
-  await exec('git', ['init'], { cwd: repo });
+  await gitInit(repo);
   await exec('git', ['config', 'user.email', 'proof@example.test'], { cwd: repo });
   await exec('git', ['config', 'user.name', 'Receipts Proof'], { cwd: repo });
   await writeFile(join(repo, 'baseline.txt'), 'baseline\n');

@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-09-30T03:23:51.165Z",
+  "host": "darwin arm64",
+  "node": "v22.20.0",
+  "method": "verifyRun LocalProvider on disposable lied checkout in-repo .tmp-measure-lied",
+  "grade": "A",
+  "timing_ms": {
+    "claimExtractionMs": 1,
+    "commandVerificationMs": 192,
+    "diffInspectionMs": 40,
+    "receiptExportMs": 0,
+    "totalMs": 233
+  },
+  "verdict": {
+    "verdict": "FIX",
+    "reason": "skipped_test",
+    "evidenceCount": 2
+  },
+  "fixture_replay_ms": 2,
+  "fixture_verdict": "FIX"
+}

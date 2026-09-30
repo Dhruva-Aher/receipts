@@ -1,0 +1,14 @@
+{
+  "captured_at": "2026-07-17",
+  "grade": "C",
+  "source": "README measured live run + proofs/live-codex-skipped-test-run.txt",
+  "model": "gpt-5.6-terra via authenticated Codex CLI",
+  "note": "Codex claim extraction dominates. Not re-run this pass (requires Codex auth). Local Grade A timings archived separately.",
+  "timing_ms": {
+    "claimExtractionMs": 9876,
+    "commandVerificationMs": 214,
+    "diffInspectionMs": 61,
+    "receiptExportMs": 1,
+    "totalMs": 10152
+  }
+}
