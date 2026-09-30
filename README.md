@@ -169,3 +169,12 @@ The human made the scope and trust-boundary decisions, rejected mock evidence an
 ## Future work
 
 After submission: GitHub Checks that attach receipts to PRs, CI runner support, policy rules, an evidence archive, and validated transcript capture for additional coding agents. These are deliberately not part of this submission; see the [feature freeze](docs/feature-freeze.md).
+
+---
+
+## For interview depth
+
+| Doc | Use |
+|-----|-----|
+| [docs/METRICS.md](docs/METRICS.md) | Claim ↔ evidence (cross-verified 2026-09-30) |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Context → Decision → Why → Evidence |
