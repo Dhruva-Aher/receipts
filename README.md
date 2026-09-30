@@ -1,6 +1,16 @@
 # Receipts
 
-**Coding agents explain. Receipts checks the evidence.** Receipts verifies what coding agents claim—not the code itself—by turning a subset of completion claims into executable evidence before a human merges.
+**Agent-claim verifier** · Developer tools · Node.js · local evidence
+
+Coding agents explain. Receipts checks the evidence — turns a subset of completion claims into executable proof before a human merges.
+
+[![CI](https://github.com/Dhruva-Aher/receipts/actions/workflows/verify.yml/badge.svg)](https://github.com/Dhruva-Aher/receipts/actions/workflows/verify.yml)
+
+| | |
+|--|--|
+| **Focus** | Claim → command re-run → git evidence → verdict |
+| **Stack** | Node.js · local checkout fixtures · Codex transcripts |
+| **Proof** | Reproducible `lied-test-run` FIX receipt · pipeline tests · measured stage timings below |
 
 > **Don’t trust the summary. Trust the receipt.**
 
